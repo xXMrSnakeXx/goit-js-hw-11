@@ -4,20 +4,25 @@ import { refs } from './js/refs';
 import { renderGalleryList } from './js/render-gallery';
 import Notiflix from 'notiflix';
 
-refs.loadMoreBtn.disabled = true;
+/**для кнопки */
+// refs.loadMoreBtn.disabled = true;
 
 let name = ``;
 let page = 1;
 
 refs.form.addEventListener(`submit`, onFormSearch);
-refs.loadMoreBtn.addEventListener(`click`, onLoadMoreBtn);
+
+/**для кнопки */
+// refs.loadMoreBtn.addEventListener(`click`, onLoadMoreBtn);
 
 function onFormSearch(evt) {
   evt.preventDefault();
   page = 1;
   name = evt.currentTarget.searchQuery.value.trim();
   refs.gallery.innerHTML = ``;
-  refs.loadMoreBtn.disabled = true;
+
+  /**для кнопки */
+  // refs.loadMoreBtn.disabled = true;
 
   if (name === ``) {
     Notiflix.Notify.failure('Search field cannot be empty');
@@ -32,11 +37,13 @@ function onFormSearch(evt) {
         );
         return;
       }
-      if (images.hits.length < 40) {
-        refs.loadMoreBtn.disabled = true;
-      } else {
-        refs.loadMoreBtn.disabled = false;
-      }
+
+      /**для кнопки */
+      // if (images.hits.length < 40) {
+      //   refs.loadMoreBtn.disabled = true;
+      // } else {
+      //   refs.loadMoreBtn.disabled = false;
+      // }
 
       renderGalleryList(images);
       Notiflix.Notify.success(`Hooray! We found ${images.totalHits} images.`);
@@ -51,10 +58,27 @@ function onLoadMoreBtn() {
       const totalPages = images.totalHits / (page * images.hits.length);
       if (totalPages < 1) {
         Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
-        refs.loadMoreBtn.disabled = true;
+        observer.disconnect(refs.search)
+        /**для кнопки */
+        // refs.loadMoreBtn.disabled = true;
       }
       renderGalleryList(images);
       Notiflix.Notify.success(`Hooray! We found ${images.totalHits} images.`);
     })
     .catch(error => console.log(error));
 }
+
+const onEntry = entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && name !== ``) {
+      onLoadMoreBtn();
+    }
+  });
+};
+const options = {
+  rootMargin: '200px',
+};
+
+const observer = new IntersectionObserver(onEntry, options);
+
+observer.observe(refs.search);
