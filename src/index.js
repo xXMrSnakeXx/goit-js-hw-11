@@ -37,7 +37,9 @@ function onFormSearch(evt) {
         );
         return;
       }
-
+      if (images.hits.length < 40) {
+        observer.disconnect(refs.search)
+      }
       /**для кнопки */
       // if (images.hits.length < 40) {
       //   refs.loadMoreBtn.disabled = true;
